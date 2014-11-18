@@ -1,0 +1,56 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta charset="utf-8">
+    <title>Ortelius</title>
+    <link rel="stylesheet" href="{{ site.baseurl }}/css/style.css" />
+    <link href='{{ site.baseurl }}/css/leaflet.css' rel='stylesheet' />
+    <script src='{{ site.baseurl }}/js/leaflet.js'></script>
+    <script src="{{ site.baseurl }}/js/d3.v3.min.js"></script>
+    <script src='{{ site.baseurl }}/js/leaflet-hash.js'></script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <section id="sidebar">
+      <div class="sidebar-item">
+        <input id="search" type="text" placeholder="Search" />
+      </div>
+      <div class="sidebar-item hidden">
+      </div>
+    </section>
+    <script>
+      var peliasEndpoint = '{{ site.data.pelias.endpoint }}';
+
+      var map = L.map('map', {
+        zoomControl: false,
+  			minZoom: 7,
+  			maxZoom: 18
+  		});
+
+      geojsonLayer = L.geoJson().addTo(map);
+
+      map.setView([{{ site.data.map.center[0] }}, {{ site.data.map.center[1] }}], {{ site.data.map.zoom }});
+      var hash = new L.Hash(map);
+
+  		var tileUrl = '{{ site.data.map.tiles }}',
+          tileLayer = L.tileLayer(tileUrl, {attribution: '{{ site.data.map.attribution }}'}).addTo(map);
+
+      d3.select("#search").on("keydown", function() {
+        if (d3.event.keyCode == 13) {
+          var query = d3.select(this).property("value");
+          d3.json(peliasEndpoint + "/search?input=" + query, function(error, json) {
+            showGeoJSON(json);
+          });
+        }
+      });
+
+      function showGeoJSON(json) {
+        geojsonLayer.clearLayers();
+        geojsonLayer.addData(json);
+
+      }
+    </script>
+  </body>
+</html>
