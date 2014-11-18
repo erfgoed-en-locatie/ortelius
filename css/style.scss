@@ -1,6 +1,6 @@
 ---
 ---
-$sidebar-width: 400px;
+$sidebar-width: 600px;
 
 * {
   margin: 0;
@@ -31,10 +31,18 @@ $sidebar-width: 400px;
 
 body {
   font-family: 'Open Sans';
+  font-size: 20px;
+}
+
+input {
+  font-family: 'Open Sans';
+  font-size: 20px;
+  border: none;
 }
 
 #map {
-  width: 100%;
+  left: $sidebar-width;
+  right: 0;
   height: 100%;
   position: absolute;
 }
@@ -47,10 +55,26 @@ body {
 }
 
 .sidebar-item {
-  padding: 20px;
   width: 100%;
+  position: relative;
+}
+
+.sidebar-item-container {
+  padding: 5px 20px;
 }
 
 #sidebar input {
   width: 100%;
+}
+
+#search {
+  border-bottom-width: 2px;
+  border-bottom-color: black;
+  border-bottom-style: solid;
+}
+
+#editor,
+.CodeMirror {
+  font-size: 15px;
+  bottom: 0;
 }

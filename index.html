@@ -6,22 +6,31 @@
 		<meta charset="utf-8">
     <title>Ortelius</title>
     <link rel="stylesheet" href="{{ site.baseurl }}/css/style.css" />
+    <link rel="stylesheet" href="{{ site.baseurl }}/css/codemirror.css">
     <link href='{{ site.baseurl }}/css/leaflet.css' rel='stylesheet' />
     <script src='{{ site.baseurl }}/js/leaflet.js'></script>
     <script src="{{ site.baseurl }}/js/d3.v3.min.js"></script>
     <script src='{{ site.baseurl }}/js/leaflet-hash.js'></script>
+    <script src='{{ site.baseurl }}/js/codemirror.js'></script>
+    <script src="{{ site.baseurl }}/js/codemirror-javascript.js"></script>
   </head>
   <body>
     <div id="map"></div>
     <section id="sidebar">
       <div class="sidebar-item">
-        <input id="search" type="text" placeholder="Search" />
+        <div class="sidebar-item-container">
+          <input id="search" type="text" placeholder="Search" />
+        </div>
       </div>
-      <div class="sidebar-item hidden">
+      <div class="sidebar-item">
+        <div class="sidebar-item-container">
+          <textarea id="editor"></textarea>
+        </div>
       </div>
     </section>
     <script>
-      var peliasEndpoint = '{{ site.data.pelias.endpoint }}';
+      var peliasEndpoint = '{{ site.data.pelias.endpoint }}',
+          peliasResults = "";
 
       var map = L.map('map', {
         zoomControl: false,
@@ -46,10 +55,22 @@
         }
       });
 
+      var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        lineNumbers: true,
+        mode: "javascript"
+      });
+
       function showGeoJSON(json) {
         geojsonLayer.clearLayers();
-        geojsonLayer.addData(json);
+        peliasResults = json;
+        if (json && json.features) {
+          geojsonLayer.addData(peliasResults);
 
+          var jsonStr = JSON.stringify(peliasResults, null, 2);
+          jsonStr = jsonStr.replace(/"geometry":\s*{(.|\n)*?}/mg, '"geometry": "…"');
+          editor.setValue(jsonStr);
+          map.fitBounds(geojsonLayer.getBounds());
+        }
       }
     </script>
   </body>
